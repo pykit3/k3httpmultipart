@@ -1,9 +1,9 @@
 """
-{{ name }} is utility to .
+k3httpmultipart is utility to .
 
 Execute a shell script::
 
-    import {{ name }}
+    import k3httpmultipart
 
     # execute a shell script
 
@@ -26,7 +26,7 @@ Run a command::
 # from .proc import ProcError
 
 __version__ = "0.1.0"
-__name__ = "{{ name }}"
+__name__ = "k3httpmultipart"
 
-from .{{ name }} import foo
-from .{{ name }} import SomeError
+from .k3httpmultipart import foo
+from .k3httpmultipart import SomeError
