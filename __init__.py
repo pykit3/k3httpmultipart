@@ -1,32 +1,29 @@
 """
-k3httpmultipart is utility to .
+#   Name
 
-Execute a shell script::
+k3httpmultipart
 
-    import k3httpmultipart
+#   Status
 
-    # execute a shell script
-
-    returncode, out, err = pk3proc.shell_script('ls / | grep bin')
-    print returncode
-    print out
-    # output:
-    # > 0
-    # > bin
-    # > sbin
-
-Run a command::
-
-    # Unlike the above snippet, following statement does not start an sh process.
-    returncode, out, err = pk3proc.command('ls', 'a*', cwd='/usr/local')
+The library is considered production ready.
 
 """
 
-# from .proc import CalledProcessError
-# from .proc import ProcError
 
 __version__ = "0.1.0"
 __name__ = "k3httpmultipart"
 
-from .k3httpmultipart import foo
-from .k3httpmultipart import SomeError
+from .multipart import (
+    Multipart,
+
+    InvalidArgumentTypeError,
+    MultipartError,
+)
+
+__all__ = [
+    'Multipart',
+
+    'InvalidArgumentTypeError',
+    'MultipartError',
+]
+

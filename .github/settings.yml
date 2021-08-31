@@ -1,6 +1,6 @@
 _extends: gh-config
 
 repository:
-  description: no desc
+  description: This module provides some util methods to get multipart headers and body.
   homepage: https://blog.openacid.com
-  topics: tag1, tag2
+  topics: python, multipart

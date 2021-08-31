@@ -4,8 +4,8 @@ import random
 import string
 import os
 
-from pykit import httpmultipart
-from pykit import fsutil
+import k3httpmultipart
+import k3fs
 
 class TestMultipart(unittest.TestCase):
     def __init__(self, *args, **kwargs):
@@ -13,7 +13,7 @@ class TestMultipart(unittest.TestCase):
         self.test_multipart = None
 
     def setUp(self):
-        self.test_multipart = httpmultipart.Multipart()
+        self.test_multipart = k3httpmultipart.Multipart()
 
     def test_headers(self):
 
@@ -78,10 +78,10 @@ class TestMultipart(unittest.TestCase):
                 12rfhfvh8876w91908777yfj
                '''
 
-        fsutil.write_file(
+        k3fs.fwrite(
             '/tmp/a.txt', str1
         )
-        fsutil.write_file(
+        k3fs.fwrite(
             '/tmp/b.txt', str2
         )
 
@@ -134,8 +134,8 @@ class TestMultipart(unittest.TestCase):
                 h[1],
                 self.test_multipart.make_headers(fields, h[0])
             )
-        fsutil.remove('/tmp/a.txt')
-        fsutil.remove('/tmp/b.txt')
+        k3fs.remove('/tmp/a.txt')
+        k3fs.remove('/tmp/b.txt')
 
     def test_body(self):
 
@@ -157,10 +157,10 @@ class TestMultipart(unittest.TestCase):
                 12rfhfvh8876w91908777yfj
                '''
 
-        fsutil.write_file(
+        k3fs.fwrite(
             '/tmp/a.txt', str1
         )
-        fsutil.write_file(
+        k3fs.fwrite(
             '/tmp/b.txt', str2
         )
 
@@ -272,8 +272,8 @@ class TestMultipart(unittest.TestCase):
                 data.append(x)
 
             self.assertEqual('\r\n'.join(c[1]), ''.join(data))
-        fsutil.remove('/tmp/a.txt')
-        fsutil.remove('/tmp/b.txt')
+        k3fs.remove('/tmp/a.txt')
+        k3fs.remove('/tmp/b.txt')
 
     def test_raise_invalid_argument_type_error(self):
         cases = [
@@ -284,6 +284,6 @@ class TestMultipart(unittest.TestCase):
 
         for case in cases:
             self.assertRaises(
-                httpmultipart.InvalidArgumentTypeError,
+                k3httpmultipart.InvalidArgumentTypeError,
                 self.test_multipart._standardize_field, *case)
 

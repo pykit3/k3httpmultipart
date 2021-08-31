@@ -4,38 +4,26 @@
    contain the root `toctree` directive.
 
 k3httpmultipart
-============
+===============
 
 .. automodule:: k3httpmultipart
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-.. contents::
-   :depth: 4
-   :local:
 
 Documentation for the Code
 **************************
 
+
 Exceptions
 ----------
 
-.. autoexception::  SomeError
+.. autoexception:: InvalidArgumentTypeError
+.. autoexception:: MultipartError
 
 
 Classes
 ----------
 
-.. autoclass::  Bar
-    :members:
+.. autoclass:: Multipart
 
-
-Functions
----------
-
-.. autofunction::  foo
 
 Indices and tables
 ==================
