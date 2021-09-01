@@ -1,41 +1,29 @@
-.. {{ name }} documentation master file, created by
+.. k3httpmultipart documentation master file, created by
    sphinx-quickstart on Thu May 14 16:58:55 2020.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-{{ name }}
-============
+k3httpmultipart
+===============
 
-.. automodule:: {{ name }}
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-.. contents::
-   :depth: 4
-   :local:
+.. automodule:: k3httpmultipart
 
 Documentation for the Code
 **************************
 
+
 Exceptions
 ----------
 
-.. autoexception::  SomeError
+.. autoexception:: InvalidArgumentTypeError
+.. autoexception:: MultipartError
 
 
 Classes
 ----------
 
-.. autoclass::  Bar
-    :members:
+.. autoclass:: Multipart
 
-
-Functions
----------
-
-.. autofunction::  foo
 
 Indices and tables
 ==================
