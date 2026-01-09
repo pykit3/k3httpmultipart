@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "k3httpmultipart"
-version = "0.1.3"
+version = "0.1.4"
 description = "HTTP multipart form data encoder"
 readme = "README.md"
 license = {text = "MIT"}
