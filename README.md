@@ -49,28 +49,28 @@ with open(file_path) as f:
 
     # output:
     # {
-    #    'Content-Type': 'multipart/form-data; boundary=FormBoundaryrGKCBY7',
-    #    'Conetnt-Length': 1200,
+    #    'Content-Length': 1200,
+    #    'Content-Type': 'multipart/form-data; boundary=75d42525e65d4cf3ba7e1fdbc9ec9787',
     # }
 
-    # get http request body reader
-    multipart = k3httpmultipart.Multipart()
+    # get http request body reader, from the same object so that the body
+    # uses the boundary in the headers
     body_reader = multipart.make_body_reader(fields)
     data = list(body_reader)
 
     print(b"".join(data).decode("utf-8"))
 
     # output:
-    # --FormBoundaryrGKCBY7
+    # --75d42525e65d4cf3ba7e1fdbc9ec9787
     # Content-Disposition: form-data; name=aaa
     #
     # abcde
-    # --FormBoundaryrGKCBY7
+    # --75d42525e65d4cf3ba7e1fdbc9ec9787
     # Content-Disposition: form-data; name=bbb; filename=abc.txt
     # Content-Type: text/plain
     #
     # 123456789
-    # --FormBoundaryrGKCBY7--
+    # --75d42525e65d4cf3ba7e1fdbc9ec9787--
 ```
 
 #   Author
