@@ -4,9 +4,6 @@ import k3fs
 
 import k3httpmultipart
 
-# http request headers
-headers = {"Content-Length": 1200}
-
 # http request fields
 file_path = "/tmp/abc.txt"
 k3fs.fwrite(file_path, "123456789")
@@ -19,16 +16,16 @@ with open(file_path) as f:
         {"name": "bbb", "value": [f, os.path.getsize(file_path), "abc.txt"]},
     ]
 
-    # get http request headers
+    # get http request headers; make_headers() computes Content-Length
     multipart = k3httpmultipart.Multipart()
-    res_headers = multipart.make_headers(fields, headers=headers)
+    res_headers = multipart.make_headers(fields)
 
     print(res_headers)
 
     # output:
     # {
-    #    'Content-Length': 1200,
     #    'Content-Type': 'multipart/form-data; boundary=75d42525e65d4cf3ba7e1fdbc9ec9787',
+    #    'Content-Length': 258,
     # }
 
     # get http request body reader, from the same object so that the body
