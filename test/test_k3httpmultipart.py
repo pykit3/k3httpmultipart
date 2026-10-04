@@ -1,13 +1,14 @@
-import unittest
 import os
+import unittest
+
+import k3fs
 
 import k3httpmultipart
-import k3fs
 
 
 class TestMultipart(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(TestMultipart, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.test_multipart = None
 
     def setUp(self):
@@ -19,28 +20,28 @@ class TestMultipart(unittest.TestCase):
                 {"Content-Length": 998, "Content-Type": "aaplication/octet-stream"},
                 {
                     "Content-Length": 998,
-                    "Content-Type": "multipart/form-data; " + "boundary={b}".format(b=self.test_multipart.boundary),
+                    "Content-Type": "multipart/form-data; " + f"boundary={self.test_multipart.boundary}",
                 },
             ],
             [
                 {"Content-Length": 1200},
                 {
                     "Content-Length": 1200,
-                    "Content-Type": "multipart/form-data; " + "boundary={b}".format(b=self.test_multipart.boundary),
+                    "Content-Type": "multipart/form-data; " + f"boundary={self.test_multipart.boundary}",
                 },
             ],
             [
                 {"Content-Type": "application/octet-stream"},
                 {
                     "Content-Length": 1335,
-                    "Content-Type": "multipart/form-data; " + "boundary={b}".format(b=self.test_multipart.boundary),
+                    "Content-Type": "multipart/form-data; " + f"boundary={self.test_multipart.boundary}",
                 },
             ],
             [
                 None,
                 {
                     "Content-Length": 1335,
-                    "Content-Type": "multipart/form-data; " + "boundary={b}".format(b=self.test_multipart.boundary),
+                    "Content-Type": "multipart/form-data; " + f"boundary={self.test_multipart.boundary}",
                 },
             ],
         ]
@@ -74,6 +75,10 @@ class TestMultipart(unittest.TestCase):
                         break
                     yield buf
 
+        def make_line_reader():
+            with open("/tmp/a.txt") as f:
+                yield from f
+
         def make_str_reader():
             yield str3
 
@@ -88,7 +93,7 @@ class TestMultipart(unittest.TestCase):
             {
                 "name": "metadata2",
                 "value": [
-                    open("/tmp/a.txt"),
+                    make_line_reader(),
                     os.path.getsize("/tmp/a.txt"),
                 ],
                 "headers": {"Content-Type": "application/octet-stream"},
@@ -138,6 +143,10 @@ class TestMultipart(unittest.TestCase):
                         break
                     yield buf
 
+        def make_line_reader():
+            with open("/tmp/a.txt") as f:
+                yield from f
+
         def make_str_reader():
             yield str3
 
@@ -151,27 +160,27 @@ class TestMultipart(unittest.TestCase):
             [
                 [{"name": "metadata1", "value": "lvting", "headers": {"Date": "Dec, 20 Dec 2018 15:00:00 GMT"}}],
                 [
-                    "--{b}".format(b=self.test_multipart.boundary),
+                    f"--{self.test_multipart.boundary}",
                     "Content-Disposition: form-data; name=metadata1",
                     "Date: Dec, 20 Dec 2018 15:00:00 GMT",
                     "",
                     "lvting",
-                    "--{b}--".format(b=self.test_multipart.boundary),
+                    f"--{self.test_multipart.boundary}--",
                 ],
             ],
             [
                 [
                     {
                         "name": "metadata2",
-                        "value": [open("/tmp/a.txt"), os.path.getsize("/tmp/a.txt")],
+                        "value": [make_line_reader(), os.path.getsize("/tmp/a.txt")],
                     }
                 ],
                 [
-                    "--{b}".format(b=self.test_multipart.boundary),
+                    f"--{self.test_multipart.boundary}",
                     "Content-Disposition: form-data; name=metadata2",
                     "",
                     str1,
-                    "--{b}--".format(b=self.test_multipart.boundary),
+                    f"--{self.test_multipart.boundary}--",
                 ],
             ],
             [
@@ -182,12 +191,12 @@ class TestMultipart(unittest.TestCase):
                     }
                 ],
                 [
-                    "--{b}".format(b=self.test_multipart.boundary),
+                    f"--{self.test_multipart.boundary}",
                     "Content-Disposition: form-data; name=metadata3; " + "filename=b.txt",
                     "Content-Type: text/plain",
                     "",
                     str2,
-                    "--{b}--".format(b=self.test_multipart.boundary),
+                    f"--{self.test_multipart.boundary}--",
                 ],
             ],
             [
@@ -198,29 +207,27 @@ class TestMultipart(unittest.TestCase):
                     }
                 ],
                 [
-                    "--{b}".format(b=self.test_multipart.boundary),
+                    f"--{self.test_multipart.boundary}",
                     "Content-Disposition: form-data; name=metadata4",
                     "",
                     str3,
-                    "--{b}--".format(b=self.test_multipart.boundary),
+                    f"--{self.test_multipart.boundary}--",
                 ],
             ],
             [
                 [{"name": "metadata5", "value": ["234ffhhif3323jjfjf3"]}],
                 [
-                    "--{b}".format(b=self.test_multipart.boundary),
+                    f"--{self.test_multipart.boundary}",
                     "Content-Disposition: form-data; name=metadata5",
                     "",
                     "234ffhhif3323jjfjf3",
-                    "--{b}--".format(b=self.test_multipart.boundary),
+                    f"--{self.test_multipart.boundary}--",
                 ],
             ],
         ]
         for c in case:
             body = self.test_multipart.make_body_reader(c[0])
-            data = []
-            for x in body:
-                data.append(x)
+            data = list(body)
 
             expected = "\r\n".join(c[1]).encode("utf-8")
             got = b"".join(data)

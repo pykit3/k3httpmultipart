@@ -1,8 +1,8 @@
-import uuid
 import copy
+import uuid
+from collections.abc import Iterator
 
 import k3mime
-from collections.abc import Iterator
 
 
 class MultipartError(Exception):
@@ -15,7 +15,7 @@ class InvalidArgumentTypeError(MultipartError):
     pass
 
 
-class Multipart(object):
+class Multipart:
     """
 
     :param block_size: It represents the size of each reading file
@@ -27,8 +27,8 @@ class Multipart(object):
 
         self.boundary = uuid.uuid4().hex
 
-        self.delimiter = "--{b}".format(b=self.boundary)
-        self.terminator = "--{b}--".format(b=self.boundary)
+        self.delimiter = f"--{self.boundary}"
+        self.terminator = f"--{self.boundary}--"
 
     def make_headers(self, fields, headers=None):
         """
@@ -77,7 +77,7 @@ class Multipart(object):
         else:
             headers = copy.deepcopy(headers)
 
-        headers["Content-Type"] = "multipart/form-data; boundary={b}".format(b=self.boundary)
+        headers["Content-Type"] = f"multipart/form-data; boundary={self.boundary}"
 
         if "Content-Length" not in headers:
             headers["Content-Length"] = self._get_body_size(fields)
@@ -93,7 +93,7 @@ class Multipart(object):
         """
 
         for f in fields:
-            reader, fsize, headers = self._standardize_field(f["name"], f["value"], f.get("headers", {}))
+            reader, _fsize, headers = self._standardize_field(f["name"], f["value"], f.get("headers", {}))
 
             yield self._get_field_header(headers)
 
@@ -123,7 +123,7 @@ class Multipart(object):
 
             return reader, fsize, headers
 
-        raise InvalidArgumentTypeError("type of value {x} is invalid".format(x=type(value)))
+        raise InvalidArgumentTypeError(f"type of value {type(value)} is invalid")
 
     def _standardize_value(self, value):
         reader, fsize, fname = (value + [None, None])[:3]
@@ -139,12 +139,12 @@ class Multipart(object):
             pass
 
         else:
-            raise InvalidArgumentTypeError("type of value[0] {x}is invalid".format(x=type(value[0])))
+            raise InvalidArgumentTypeError(f"type of value[0] {type(value[0])}is invalid")
 
         return reader, fsize, fname
 
     def _get_field_size(self, field):
-        reader, fsize, headers = self._standardize_field(field["name"], field["value"], field.get("headers", {}))
+        _reader, fsize, headers = self._standardize_field(field["name"], field["value"], field.get("headers", {}))
 
         field_headers = self._get_field_header(headers)
 
@@ -182,6 +182,6 @@ class Multipart(object):
 
     def _set_content_disposition(self, headers, name, fname=None):
         if fname is None:
-            headers["Content-Disposition"] = "form-data; name={n}".format(n=name)
+            headers["Content-Disposition"] = f"form-data; name={name}"
         else:
-            headers["Content-Disposition"] = "form-data; name={n}; filename={fn}".format(n=name, fn=fname)
+            headers["Content-Disposition"] = f"form-data; name={name}; filename={fname}"

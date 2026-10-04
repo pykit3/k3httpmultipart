@@ -23,13 +23,10 @@ import k3httpmultipart
 # Define form fields
 fields = [
     {
-        'name': 'text_field',
-        'value': 'hello world',
+        "name": "text_field",
+        "value": "hello world",
     },
-    {
-        'name': 'file_field',
-        'value': [open('/path/to/file.txt'), os.path.getsize('/path/to/file.txt'), 'file.txt']
-    },
+    {"name": "file_field", "value": [open("/path/to/file.txt"), os.path.getsize("/path/to/file.txt"), "file.txt"]},
 ]
 
 # Create multipart encoder
@@ -43,7 +40,7 @@ headers = multipart.make_headers(fields)
 body_reader = multipart.make_body_reader(fields)
 
 # Read body content
-body = b''.join(body_reader)
+body = b"".join(body_reader)
 ```
 
 ## API Reference

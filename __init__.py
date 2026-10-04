@@ -3,13 +3,13 @@ from importlib.metadata import version
 __version__ = version("k3httpmultipart")
 
 from .multipart import (
-    Multipart,
     InvalidArgumentTypeError,
+    Multipart,
     MultipartError,
 )
 
 __all__ = [
-    "Multipart",
     "InvalidArgumentTypeError",
+    "Multipart",
     "MultipartError",
 ]
