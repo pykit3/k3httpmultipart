@@ -56,8 +56,8 @@ class Multipart(object):
                     as the field body
 
                     -   `size`
-                    `size` refers to the length of the content, When the type of `content` is a
-                    string, size can be None
+                    `size` refers to the length of the content in bytes, a string is counted after
+                    UTF-8 encoding. When the type of `content` is a string, size can be None
 
                     - `file_name`
                     `file_name` is an optional argument, if `file_name` is None, that indicates
@@ -89,7 +89,7 @@ class Multipart(object):
         Return a body according to the fields
 
         :param fields: refer to the explanation above fields
-        :return: a generator that represents the multipart request body
+        :return: a generator that yields the multipart request body as `bytes`, a string is encoded as UTF-8
         """
 
         for f in fields:
@@ -98,16 +98,18 @@ class Multipart(object):
             yield self._get_field_header(headers)
 
             for buf in reader:
+                if isinstance(buf, str):
+                    buf = buf.encode("utf-8")
                 yield buf
 
-            yield "\r\n"
+            yield b"\r\n"
 
-        yield self.terminator
+        yield self.terminator.encode("utf-8")
 
     def _standardize_field(self, name, value, headers):
         if isinstance(value, str):
             reader = self._make_str_reader(value)
-            fsize = len(value)
+            fsize = len(value.encode("utf-8"))
             self._set_content_disposition(headers, name)
 
             return reader, fsize, headers
@@ -131,7 +133,7 @@ class Multipart(object):
 
         elif isinstance(reader, str):
             reader = self._make_str_reader(reader)
-            fsize = len(value[0])
+            fsize = len(value[0].encode("utf-8"))
 
         elif isinstance(reader, Iterator):
             pass
@@ -166,7 +168,7 @@ class Multipart(object):
 
         field_headers.extend([""] * 2)
 
-        return "\r\n".join(field_headers)
+        return "\r\n".join(field_headers).encode("utf-8")
 
     def _make_file_reader(self, file_object):
         while True:

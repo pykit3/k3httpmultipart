@@ -222,9 +222,39 @@ class TestMultipart(unittest.TestCase):
             for x in body:
                 data.append(x)
 
-            self.assertEqual("\r\n".join(c[1]), "".join(data))
+            expected = "\r\n".join(c[1]).encode("utf-8")
+            got = b"".join(data)
+            self.assertEqual(expected, got)
         k3fs.remove("/tmp/a.txt")
         k3fs.remove("/tmp/b.txt")
+
+    def test_body_utf8_and_binary(self):
+        # Content-Length must count the 3 UTF-8 bytes of "中", and a binary
+        # stream must pass through as bytes.
+        fields = [
+            {"name": "f", "value": "中"},
+            {"name": "g", "value": [iter([b"\x89PNG\r\n\x1a\n"]), 8]},
+        ]
+
+        headers = self.test_multipart.make_headers(fields)
+        body = b"".join(self.test_multipart.make_body_reader(fields))
+
+        delimiter = f"--{self.test_multipart.boundary}".encode()
+        expected = b"\r\n".join(
+            [
+                delimiter,
+                b"Content-Disposition: form-data; name=f",
+                b"",
+                "中".encode(),
+                delimiter,
+                b"Content-Disposition: form-data; name=g",
+                b"",
+                b"\x89PNG\r\n\x1a\n",
+                delimiter + b"--",
+            ]
+        )
+        self.assertEqual(expected, body)
+        self.assertEqual(len(expected), headers["Content-Length"])
 
     def test_raise_invalid_argument_type_error(self):
         cases = [

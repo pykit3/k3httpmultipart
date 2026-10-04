@@ -43,7 +43,7 @@ headers = multipart.make_headers(fields)
 body_reader = multipart.make_body_reader(fields)
 
 # Read body content
-body = ''.join(body_reader)
+body = b''.join(body_reader)
 ```
 
 ## API Reference

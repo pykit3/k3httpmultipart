@@ -37,7 +37,7 @@ data = []
 for body in body_reader:
     data.append(body)
 
-print("".join(data))
+print(b"".join(data).decode("utf-8"))
 
 # output:
 # --FormBoundaryrGKCBY7
