@@ -1,4 +1,5 @@
 import copy
+import io
 import uuid
 from collections.abc import Iterator
 
@@ -128,7 +129,7 @@ class Multipart:
     def _standardize_value(self, value):
         reader, fsize, fname = (value + [None, None])[:3]
 
-        if isinstance(reader, type(open)):
+        if isinstance(reader, io.IOBase):
             reader = self._make_file_reader(reader)
 
         elif isinstance(reader, str):
@@ -173,7 +174,7 @@ class Multipart:
     def _make_file_reader(self, file_object):
         while True:
             buf = file_object.read(self.block_size)
-            if buf == "":
+            if not buf:
                 break
             yield buf
 

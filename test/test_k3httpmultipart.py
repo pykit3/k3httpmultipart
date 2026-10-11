@@ -1,3 +1,4 @@
+import io
 import os
 import unittest
 
@@ -262,6 +263,18 @@ class TestMultipart(unittest.TestCase):
         )
         self.assertEqual(expected, body)
         self.assertEqual(len(expected), headers["Content-Length"])
+
+    def test_file_object_block_size(self):
+        multipart = k3httpmultipart.Multipart(block_size=2)
+        cases = (
+            (io.BytesIO(b"01234"), [b"01", b"23", b"4"]),
+            (io.StringIO("ab\ncd"), [b"ab", b"\nc", b"d"]),
+        )
+        for f, expected in cases:
+            fields = [{"name": "f", "value": [f, 5]}]
+            chunks = list(multipart.make_body_reader(fields))
+            # The field header comes first, and the "\r\n" and terminator last.
+            self.assertEqual(expected, chunks[1:-2])
 
     def test_raise_invalid_argument_type_error(self):
         cases = [
