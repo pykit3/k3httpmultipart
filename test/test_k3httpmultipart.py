@@ -1,5 +1,6 @@
 import io
 import os
+import tempfile
 import unittest
 
 import k3fs
@@ -275,6 +276,47 @@ class TestMultipart(unittest.TestCase):
             chunks = list(multipart.make_body_reader(fields))
             # The field header comes first, and the "\r\n" and terminator last.
             self.assertEqual(expected, chunks[1:-2])
+
+    def test_real_files(self):
+        # Files on disk without newlines: make_headers() must not consume them,
+        # and the body must hold every byte in chunks of at most block_size.
+        multipart = k3httpmultipart.Multipart(block_size=4)
+        with tempfile.TemporaryDirectory() as tmp:
+            bin_path = os.path.join(tmp, "b.bin")
+            txt_path = os.path.join(tmp, "t.txt")
+            with open(bin_path, "wb") as f:
+                f.write(b"\x89PNG\x00\xff\xfe\x01\x02")
+            with open(txt_path, "w", encoding="utf-8") as f:
+                f.write("abcdefghij")
+
+            with open(bin_path, "rb") as fbin, open(txt_path, encoding="utf-8") as ftxt:
+                fields = [
+                    {"name": "b", "value": [fbin, 9, "b.bin"]},
+                    {"name": "t", "value": [ftxt, 10, "t.txt"]},
+                ]
+                headers = multipart.make_headers(fields)
+                chunks = list(multipart.make_body_reader(fields))
+
+        delimiter = f"--{multipart.boundary}".encode()
+        expected = [
+            delimiter + b"\r\nContent-Disposition: form-data; name=b; filename=b.bin"
+            b"\r\nContent-Type: application/octet-stream\r\n\r\n",
+            b"\x89PNG",
+            b"\x00\xff\xfe\x01",
+            b"\x02",
+            b"\r\n",
+            delimiter + b"\r\nContent-Disposition: form-data; name=t; filename=t.txt"
+            b"\r\nContent-Type: text/plain\r\n\r\n",
+            b"abcd",
+            b"efgh",
+            b"ij",
+            b"\r\n",
+            delimiter + b"--",
+        ]
+        self.assertEqual(expected, chunks)
+
+        body = b"".join(chunks)
+        self.assertEqual(len(body), headers["Content-Length"])
 
     def test_field_headers_unchanged(self):
         def make_fields():
