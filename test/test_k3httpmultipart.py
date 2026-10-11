@@ -276,6 +276,18 @@ class TestMultipart(unittest.TestCase):
             # The field header comes first, and the "\r\n" and terminator last.
             self.assertEqual(expected, chunks[1:-2])
 
+    def test_field_headers_unchanged(self):
+        def make_fields():
+            return [
+                {"name": "f", "value": ["data", None, "f.txt"], "headers": {"X-Foo": "bar"}},
+                {"name": "g", "value": "v", "headers": {"Content-Disposition": "form-data; name=x"}},
+            ]
+
+        fields = make_fields()
+        self.test_multipart.make_headers(fields)
+        list(self.test_multipart.make_body_reader(fields))
+        self.assertEqual(make_fields(), fields)
+
     def test_raise_invalid_argument_type_error(self):
         cases = [
             ("metadata1", ("lvting",), {}),

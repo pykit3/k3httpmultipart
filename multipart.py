@@ -108,6 +108,9 @@ class Multipart:
         yield self.terminator.encode("utf-8")
 
     def _standardize_field(self, name, value, headers):
+        # The caller owns `headers`; the headers set below go into a copy.
+        headers = dict(headers)
+
         if isinstance(value, str):
             reader = self._make_str_reader(value)
             fsize = len(value.encode("utf-8"))
