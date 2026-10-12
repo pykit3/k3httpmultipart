@@ -277,6 +277,9 @@ class TestMultipart(unittest.TestCase):
             # The field header comes first, and the "\r\n" and terminator last.
             self.assertEqual(expected, chunks[1:-2])
 
+    def test_block_size_zero(self):
+        self.assertRaises(ValueError, k3httpmultipart.Multipart, block_size=0)
+
     def test_real_files(self):
         # Files on disk without newlines: make_headers() must not consume them,
         # and the body must hold every byte in chunks of at most block_size.

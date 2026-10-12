@@ -19,11 +19,15 @@ class InvalidArgumentTypeError(MultipartError):
 class Multipart:
     """
 
-    :param block_size: It represents the size of each reading file
+    :param block_size: It represents the size of each reading file. It must not be 0.
     :param boundary: a placeholder that represents out specified delimiter
     """
 
     def __init__(self, block_size=1024 * 1024):
+        # read(0) returns an empty buffer, so a file reader would stop before reading any data.
+        if block_size == 0:
+            raise ValueError("block_size must not be 0")
+
         self.block_size = block_size
 
         self.boundary = uuid.uuid4().hex
